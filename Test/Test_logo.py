@@ -1,61 +1,62 @@
-from selenium import webdriver
-from Pages.page_objects_order_page import OrderPage
-from selenium.webdriver.firefox.service import Service as FirefoxService
-from webdriver_manager.firefox import GeckoDriverManager
-from Pages.page_objects_main_page import MainPage
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
 import pytest
 import allure
+from selenium.common import TimeoutException
+from Pages.page_objects_main_page import MainPage
+from Pages.page_objects_order_page import OrderPage
 from urls import Urls
+import logging
+from selenium.webdriver.support import expected_conditions as EC
+logger = logging.getLogger(__name__)
+from base_page import BasePage
 
 @allure.title('Проверка логотипов «Самоката» и «Яндекса»')
 class TestLogo:
-    @allure.step('Открываем браузер Firefox')
-    def setup_method(self, method):
-        service = FirefoxService(executable_path=GeckoDriverManager().install())
-        self.driver = webdriver.Firefox(service=service)
-        self.driver.get(Urls.BASE_URL)
+    @pytest.fixture(scope="function", autouse=True)
+    def setup(self, driver):
+        self.driver = driver
         self.main_page = MainPage(self.driver)
         self.order_page = OrderPage(self.driver)
-
-    @allure.step('Закрываем браузер')
-    def teardown_method(self, method):
-        self.driver.quit()
+        self.driver.get(Urls.BASE_URL)
 
     @allure.description('Тест проверки перехода на главную страницу по клику на логотип «Самоката»')
-    def test_click_scooter_logo(self):
-
-        print("Кликаем на логотип «Самоката»")
-
+    def test_click_scooter_logo(self,):
+        logger.info("Кликаем на логотип «Самоката»")
         self.main_page.click_scooter_logo()
 
-        print("Проверяем, что перешли на главную страницу")
-        WebDriverWait(self.driver, 10).until(
-            EC.url_contains("qa-scooter.praktikum-services.ru")
-        )
-        assert "qa-scooter.praktikum-services.ru" in self.driver.current_url, \
-            "Не удалось перейти на главную страницу по клику на логотип самоката"
+        logger.info("Проверяем, что перешли на главную страницу")
+        try:
+            assert Urls.BASE_URL in self.driver.current_url, "Не удалось перейти на главную страницу по клику на логотип самоката"
+        except Exception as e:
+            logger.error(f"Ошибка при проверке перехода на главную страницу: {e}")
+            raise
 
     @allure.description('Тест проверки перехода на главную страницу Яндекса по клику на логотип Яндекса')
     def test_click_yandex_logo(self):
-
-        print("Кликаем на логотип Яндекса")
+        logger.info("Кликаем на логотип Яндекса")
         main_window = self.driver.current_window_handle
 
         self.main_page.click_yandex_logo()
 
-        print("Переключаемся на новое окно")
-        WebDriverWait(self.driver, 10).until(EC.number_of_windows_to_be(2))
+        logger.info("Переключаемся на новое окно")
+        try:
+            self.wait.until(EC.number_of_windows_to_be(2)) # используем wait из BasePage
+        except TimeoutException:
+            logger.error("Не удалось дождаться открытия нового окна")
+            raise
+
         for handle in self.driver.window_handles:
             if handle != main_window:
                 self.driver.switch_to.window(handle)
                 break
 
-        print("Проверяем, что открылась главная страница Дзена")
-        WebDriverWait(self.driver, 10).until(EC.url_contains("dzen.ru"))
-        assert "dzen.ru" in self.driver.current_url, "Не удалось перейти на главную страницу Дзена"
+        logger.info("Проверяем, что открылась главная страница Дзена")
+        try:
+            self.wait.until(EC.url_contains("dzen.ru")) # используем wait из BasePage
+            assert "dzen.ru" in self.driver.current_url, "Не удалось перейти на главную страницу Дзена"
+        except Exception as e:
+            logger.error(f"Ошибка при проверке перехода на главную страницу Дзена: {e}")
+            raise
 
-        print("Закрываем новое окно и переключаемся обратно на основное")
+        logger.info("Закрываем новое окно и переключаемся обратно на основное")
         self.driver.close()
         self.driver.switch_to.window(main_window)

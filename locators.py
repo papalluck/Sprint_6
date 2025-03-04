@@ -23,7 +23,7 @@ class MainPageLocators:
 
     # Кнопки "Заказать"
     ORDER_BUTTON_TOP = (By.XPATH, '//button[@class="Button_Button__ra12g"]')
-    ORDER_BUTTON_BOTTOM = (By.XPATH, '//*[@id="root"]/div/div[1]/div[4]/div[2]/div[5]/button')
+    ORDER_BUTTON_BOTTOM = (By.XPATH, '//*[@id="root"]/div/div[1]/div[4]/div[2]/div[5]/button') #TUT ISPRAVIT
     # Куки
     COOKIES_BUTTON = (By.XPATH, '//button[@id="rcc-confirm-button"]')
     # Логотипы
@@ -40,8 +40,7 @@ class OrderPageLocators:
 
     @staticmethod
     def metro_station_item_locator(station_name):
-        """Возвращает локатор для элемента станции метро в выпадающем списке."""
-        return (By.XPATH, '//button[@value="1"]')
+        return (By.XPATH, '//button[@value="1"]')  #TUT ISPRAVIT
 
     NEXT_BUTTON = (By.XPATH, '//button[text()="Далее"]')
 
@@ -54,11 +53,10 @@ class OrderPageLocators:
         return (By.XPATH, f"//div[contains(@class, 'react-datepicker__day') and text()='{day}']")
 
     RENTAL_PERIOD_DROPDOWN = (By.XPATH, "//span[@class='Dropdown-arrow']")
-    RENTAL_PERIOD_DROPDOWN_CONTAINER = (By.XPATH, "//div[@class='Dropdown-menu']")  # Замените на правильный локатор контейнера!
+    RENTAL_PERIOD_DROPDOWN_CONTAINER = (By.XPATH, "//div[@class='Dropdown-menu']")
 
     @staticmethod
     def rental_period_item_locator(rental_period_text):
-        """Возвращает локатор для пункта выпадающего списка срока аренды."""
         return (By.XPATH, "//div[@class='Dropdown-option' and text()='сутки']")
 
     SCOOTER_COLOR_BLACK = (By.XPATH, '//input[@id="black"]')

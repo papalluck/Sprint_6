@@ -1,11 +1,17 @@
 import pytest
 from selenium import webdriver
-import urls
+from selenium.webdriver.firefox.service import Service as FirefoxService
+from webdriver_manager.firefox import GeckoDriverManager
+import logging
 
+logger = logging.getLogger(__name__)
 
-@pytest.fixture()
+@pytest.fixture(scope="session")
 def driver():
-    driver = webdriver.Firefox()
-    driver.get(urls.Urls.BASE_URL)
+    logger.info("Начинаем настройку драйвера")
+    service = FirefoxService(executable_path=GeckoDriverManager().install())
+    driver = webdriver.Firefox(service=service)
+    driver.maximize_window()
     yield driver
     driver.quit()
+    logger.info("Драйвер закрыт")
