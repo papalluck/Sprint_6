@@ -4,8 +4,6 @@ from Pages.page_objects_main_page import MainPage
 import allure
 from urls import Urls
 import logging
-from base_page import BasePage
-
 
 logger = logging.getLogger(__name__)
 
@@ -13,7 +11,6 @@ logger = logging.getLogger(__name__)
 class TestOrder:
     @pytest.fixture(scope="function", autouse=True)
     def setup(self, driver):
-        """Выполняется перед каждым тестом."""
         self.driver = driver
         self.main_page = MainPage(self.driver)
         self.order_page = OrderPage(self.driver)

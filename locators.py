@@ -12,20 +12,21 @@ class MainPageLocators:
     FAQ_QUESTIONS_8 = (By.XPATH, '//*[@id="accordion__heading-7"]')
 
     # Ответы на вопросы
-    FAQ_ANSWER_1 = (By.XPATH, '//p[contains(text(),"Сутки — 400 рублей. Оплата курьеру — наличными или")]')
-    FAQ_ANSWER_2 = (By.XPATH, '//p[contains(text(),"Пока что у нас так: один заказ — один самокат. Есл")]')
-    FAQ_ANSWER_3 = (By.XPATH, '//p[contains(text(),"Допустим, вы оформляете заказ на 8 мая. Мы привози")]')
-    FAQ_ANSWER_4 = (By.XPATH, '//p[contains(text(),"Только начиная с завтрашнего дня. Но скоро станем")]')
-    FAQ_ANSWER_5 = (By.XPATH, '//p[contains(text(),"Пока что нет! Но если что-то срочное — всегда можн")]')
-    FAQ_ANSWER_6 = (By.XPATH, '//p[contains(text(),"Самокат приезжает к вам с полной зарядкой. Этого х")]')
-    FAQ_ANSWER_7 = (By.XPATH, '//p[contains(text(),"Да, пока самокат не привезли. Штрафа не будет, объ")]')
-    FAQ_ANSWER_8 = (By.XPATH, '//p[contains(text(),"Да, обязательно. Всем самокатов! И Москве, и Моско")]')
+    FAQ_ANSWER_1 = (By.XPATH, '//div[@id="accordion__panel-0"]/p')
+    FAQ_ANSWER_2 = (By.XPATH, '//div[@id="accordion__panel-1"]/p')
+    FAQ_ANSWER_3 = (By.XPATH, '//div[@id="accordion__panel-2"]/p')
+    FAQ_ANSWER_4 = (By.XPATH, '//div[@id="accordion__panel-3"]/p')
+    FAQ_ANSWER_5 = (By.XPATH, '//div[@id="accordion__panel-4"]/p')
+    FAQ_ANSWER_6 = (By.XPATH, '//div[@id="accordion__panel-5"]/p')
+    FAQ_ANSWER_7 = (By.XPATH, '//div[@id="accordion__panel-6"]/p')
+    FAQ_ANSWER_8 = (By.XPATH, '//div[@id="accordion__panel-7"]/p')
 
     # Кнопки "Заказать"
     ORDER_BUTTON_TOP = (By.XPATH, '//button[@class="Button_Button__ra12g"]')
-    ORDER_BUTTON_BOTTOM = (By.XPATH, '//*[@id="root"]/div/div[1]/div[4]/div[2]/div[5]/button') #TUT ISPRAVIT
+    ORDER_BUTTON_BOTTOM = (By.XPATH, '//button[@class="Button_Button__ra12g Button_UltraBig__UU3Lp"]')
+
     # Куки
-    COOKIES_BUTTON = (By.XPATH, '//button[@id="rcc-confirm-button"]')
+    COOKIES_BUTTON = (By.ID, "rcc-confirm-button")
     # Логотипы
     SCOOTER_LOGO = (By.XPATH, "//a[@class='Header_LogoScooter__3lsAR']")
     YANDEX_LOGO = (By.XPATH, "//a[@class='Header_LogoYandex__3TSOI']")
@@ -40,7 +41,7 @@ class OrderPageLocators:
 
     @staticmethod
     def metro_station_item_locator(station_name):
-        return (By.XPATH, '//button[@value="1"]')  #TUT ISPRAVIT
+        return (By.XPATH, '//button[@value="1"]')
 
     NEXT_BUTTON = (By.XPATH, '//button[text()="Далее"]')
 
@@ -49,7 +50,6 @@ class OrderPageLocators:
 
     @staticmethod
     def delivery_date_day_locator(day):
-        """Возвращает локатор для конкретного дня в календаре."""
         return (By.XPATH, f"//div[contains(@class, 'react-datepicker__day') and text()='{day}']")
 
     RENTAL_PERIOD_DROPDOWN = (By.XPATH, "//span[@class='Dropdown-arrow']")
@@ -57,7 +57,7 @@ class OrderPageLocators:
 
     @staticmethod
     def rental_period_item_locator(rental_period_text):
-        return (By.XPATH, "//div[@class='Dropdown-option' and text()='сутки']")
+        return (By.XPATH, f"//div[@class='Dropdown-option' and text()='{rental_period_text}']")
 
     SCOOTER_COLOR_BLACK = (By.XPATH, '//input[@id="black"]')
     SCOOTER_COLOR_GREY = (By.XPATH, '//input[@id="grey"]')
