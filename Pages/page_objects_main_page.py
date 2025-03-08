@@ -1,81 +1,62 @@
 import allure
-from selenium.common import TimeoutException
 from selenium.webdriver.remote.webdriver import WebDriver
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
-from locators import MainPageLocators
 from Pages.base_page import BasePage
-import logging
-
-logger = logging.getLogger(__name__)
+from locators import MainPageLocators
 
 
 class MainPage(BasePage):
     def __init__(self, driver: WebDriver):
         super().__init__(driver)
 
-    @allure.step('Кликает кнопку принятия куки')
+    @allure.step('Кликает кнопку принятия куки, если она есть')
     def click_cookies_button(self):
-        self.click(MainPageLocators.COOKIES_BUTTON)
+        try:
+            # Пытаемся найти кнопку
+            cookie_buttons = self.find_elements(MainPageLocators.COOKIES_BUTTON, time=3)  # Уменьшаем время ожидания
+
+            # Если кнопка найдена, кликаем на нее
+            if cookie_buttons:
+                self.click(MainPageLocators.COOKIES_BUTTON)
+                self.logger.info("Кнопка куки найдена и нажата")
+            else:
+                self.logger.info("Кнопка куки не найдена, продолжаем без нажатия")
+        except Exception as e:
+            self.logger.error(f"Не удалось кликнуть кнопку принятия куки: {e}")
+        raise
 
     @allure.step('Кликает на вопрос в FAQ по номеру (1-8)')
     def click_faq_question(self, question_number):
         locator = (By.XPATH, f'//*[@id="accordion__heading-{question_number - 1}"]')
-        try:
-            element = WebDriverWait(self.driver, 10).until(
-                EC.element_to_be_clickable(locator)
-            )
-            self.driver.execute_script("arguments[0].click();", element)  # Кликаем с помощью JavaScript
-        except Exception as e:
-            logger.error(f"Не удалось кликнуть на вопрос {question_number}: {e}")
-            raise
 
-    @allure.step('Возвращает текст ответа в FAQ по номеру (1-8)')
-    def get_faq_answer_text(self, question_number):
-        locator = (By.XPATH, f'//div[@id="accordion__panel-{question_number - 1}"]/p')
-        try:
-            element = WebDriverWait(self.driver, 10).until(
-                EC.visibility_of_element_located(locator)
-            )
-            return element.text
-        except Exception as e:
-            logger.error(f"Не удалось получить текст ответа для вопроса {question_number}: {e}")
-            return ""
+        # Явно прокручиваем к элементу ПЕРЕД кликом
+        self.scroll_to_element(locator)
 
-    @allure.step('Кликает кнопку заказа (вверху или внизу страницы)')
-    def click_order_button(self, button_type):
-        if button_type == "top":
-            locator = MainPageLocators.ORDER_BUTTON_TOP
-        else:
-            locator = MainPageLocators.ORDER_BUTTON_BOTTOM
+        self.click(locator)
 
-        try:
-            element = self.find_element(locator)
-
-            if button_type == "bottom":
-                self.scroll_to_element(element)
-
-            self.click(locator)
-
-        except TimeoutException:
-            self.logger.exception(f"Не удалось найти или кликнуть кнопку 'Заказать' ({button_type})")
-            self.logger.debug(f"Текущий HTML:\n{self.driver.page_source}")
-            raise
-
-    @allure.step('Кликает на логотип «Самоката»')
+    @allure.step("Кликает на логотип Самоката")
     def click_scooter_logo(self):
         self.click(MainPageLocators.SCOOTER_LOGO)
 
-    @allure.step('Кликает на логотип Яндекса')
+    @allure.step("Кликает на логотип Яндекса")
     def click_yandex_logo(self):
         self.click(MainPageLocators.YANDEX_LOGO)
 
-    @allure.step('Ожидает, пока URL страницы станет равным {url}')
-    def wait_url(self, url, timeout=20):
-        try:
-            WebDriverWait(self.driver, timeout).until(EC.url_contains(url))
-        except TimeoutException:
-            logger.error(f"Не удалось дождаться URL: {url} за {timeout} секунд")
-            raise
+    @allure.step('Ожидает, пока URL страницы станет содержать "{url}" в течение {timeout} секунд')
+    def wait_for_url_contains(self, url, timeout=10):
+        self.wait_url_contains(url, timeout)
 
+    @allure.step('Кликает на кнопку "Заказать" ({button_type})')
+    def click_order_button(self, button_type):
+        if button_type == "top":
+            locator = MainPageLocators.ORDER_BUTTON_TOP
+        elif button_type == "bottom":
+            locator = MainPageLocators.ORDER_BUTTON_BOTTOM
+        else:
+            raise ValueError(f"Недопустимый тип кнопки: {button_type}. Допустимые значения: 'top', 'bottom'")
+        self.click(locator)
+
+    @allure.step('Получает текст ответа на вопрос FAQ по номеру {question_number}')
+    def get_faq_answer_text(self, question_number):
+        locator = (By.XPATH, f'//*[@id="accordion__panel-{question_number - 1}"]/p')
+        return self.get_text(locator)

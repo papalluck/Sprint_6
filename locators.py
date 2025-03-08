@@ -48,16 +48,17 @@ class OrderPageLocators:
     # Вторая страница заказа
     DELIVERY_DATE_INPUT = (By.XPATH, "//input[@placeholder='* Когда привезти самокат']")
 
+    CALENDAR_DAY = (By.XPATH, "//div[contains(@class, 'react-datepicker__day') and text()='1']")
+
+
     @staticmethod
-    def delivery_date_day_locator(day):
-        return (By.XPATH, f"//div[contains(@class, 'react-datepicker__day') and text()='{day}']")
+    def rental_period_item_locator(rental_period_text):
+        return (By.XPATH, "//div[@class='Dropdown-option' and text()='{rental_period_text}']")
+
 
     RENTAL_PERIOD_DROPDOWN = (By.XPATH, "//span[@class='Dropdown-arrow']")
     RENTAL_PERIOD_DROPDOWN_CONTAINER = (By.XPATH, "//div[@class='Dropdown-menu']")
 
-    @staticmethod
-    def rental_period_item_locator(rental_period_text):
-        return (By.XPATH, f"//div[@class='Dropdown-option' and text()='{rental_period_text}']")
 
     SCOOTER_COLOR_BLACK = (By.XPATH, '//input[@id="black"]')
     SCOOTER_COLOR_GREY = (By.XPATH, '//input[@id="grey"]')

@@ -3,14 +3,19 @@ import allure
 from Pages.page_objects_main_page import MainPage
 from urls import Urls
 import logging
-from locators import MainPageLocators
-
+import time
 
 logger = logging.getLogger(__name__)
 
-
 @allure.title('Проверка раздела «Вопросы о важном»')
 class TestFAQ:
+
+    @pytest.fixture(scope="function")
+    def setup(self, driver):
+        self.driver = driver
+        self.main_page = MainPage(self.driver)
+        self.driver.get(Urls.BASE_URL)
+        return self.main_page
 
     @pytest.mark.parametrize(
         "question_number, expected_answer",
@@ -25,28 +30,15 @@ class TestFAQ:
             (8, "Да, обязательно. Всем самокатов! И Москве, и Московской области."),
         ],
     )
+    @pytest.mark.order(2)
     @allure.title('Проверка выпадающего списка в разделе «Вопросы о важном»')
-    def test_faq_answer(self, driver, question_number, expected_answer):
+    def test_faq_answer(self, setup, question_number, expected_answer):
         logger.info(f"Проверяем вопрос {question_number} с ответом: {expected_answer}")
-        main_page = MainPage(driver)
-        driver.get(Urls.BASE_URL)
+        main_page = setup
 
-        try:
-            cookie_buttons = driver.find_elements(*MainPageLocators.COOKIES_BUTTON)
-            if cookie_buttons:
-                cookie_buttons[0].click()
-                logger.info("Кнопка куки найдена и нажата")
-            else:
-                logger.info("Кнопка куки не найдена, продолжаем без нажатия")
-        except Exception as e:
-            logger.error(f"Не удалось кликнуть кнопку принятия куки: {e}")
-            raise
+        main_page.click_faq_question(question_number)
+        time.sleep(0.5)
+        actual_answer = main_page.get_faq_answer_text(question_number)
 
-        try:
-            main_page.click_faq_question(question_number)
-            actual_answer = main_page.get_faq_answer_text(question_number)
-            assert actual_answer == expected_answer, f"Ожидаемый ответ: {expected_answer}, Фактический ответ: {actual_answer}"
-        except Exception as e:
-            logger.error(f"Ошибка при проверке вопроса {question_number}: {e}")
-            raise
+        assert actual_answer == expected_answer, f"Ожидаемый ответ: {expected_answer}, Фактический ответ: {actual_answer}"
 
