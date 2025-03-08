@@ -66,7 +66,7 @@ class BasePage:
     @allure.step('Кликает на элемент {locator}')
     def click(self, locator):
         try:
-            element = self.find_element(locator)  # Сначала находим элемент
+            element = self.find_element(locator)
             self.driver.execute_script("arguments[0].click();", element)
             self.logger.info(f"Успешно кликнули на элемент {locator}")
         except Exception as e:

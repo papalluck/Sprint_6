@@ -12,10 +12,8 @@ class MainPage(BasePage):
     @allure.step('Кликает кнопку принятия куки, если она есть')
     def click_cookies_button(self):
         try:
-            # Пытаемся найти кнопку
-            cookie_buttons = self.find_elements(MainPageLocators.COOKIES_BUTTON, time=3)  # Уменьшаем время ожидания
+            cookie_buttons = self.find_elements(MainPageLocators.COOKIES_BUTTON, time=3)
 
-            # Если кнопка найдена, кликаем на нее
             if cookie_buttons:
                 self.click(MainPageLocators.COOKIES_BUTTON)
                 self.logger.info("Кнопка куки найдена и нажата")
@@ -29,7 +27,6 @@ class MainPage(BasePage):
     def click_faq_question(self, question_number):
         locator = (By.XPATH, f'//*[@id="accordion__heading-{question_number - 1}"]')
 
-        # Явно прокручиваем к элементу ПЕРЕД кликом
         self.scroll_to_element(locator)
 
         self.click(locator)
